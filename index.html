@@ -1,653 +1,271 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Football Players">
-  <meta name="theme-color" content="#1f2937">
-  <meta name="description" content="Buscador de jugadores - Liga Profesional Argentina">
-  
-  <title>Players Pro - Liga Argentina</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%231f2937' width='180' height='180'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='middle'>⚽</text></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%231f2937' width='180' height='180'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='middle'>⚽</text></svg>">
-  <link rel="manifest" href="manifest.json">
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary: #3b82f6;
-      --secondary: #1f2937;
-      --accent: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --light: #f3f4f6;
-      --dark: #111827;
-      --border: #d1d5db;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--secondary);
-      color: #fff;
-      overflow-x: hidden;
-      padding-bottom: 100px;
-    }
-
-    /* HEADER */
-    .header {
-      background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
-      padding: 1rem 1rem 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .header h1 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    /* TABS */
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-    }
-
-    .tab-btn {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      padding: 0.7rem 1.2rem;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      white-space: nowrap;
-      transition: all 0.3s ease;
-    }
-
-    .tab-btn.active {
-      background: white;
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .tab-btn:hover {
-      background: rgba(255,255,255,0.3);
-    }
-
-    /* SEARCH & FILTERS */
-    .search-container {
-      max-width: 1200px;
-      margin: 1rem auto;
-      padding: 0 1rem;
-      display: grid;
-      gap: 1rem;
-    }
-
-    .search-box {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .search-box input,
-    .search-box select {
-      flex: 1;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      background: var(--light);
-      color: var(--secondary);
-    }
-
-    .search-box button {
-      padding: 0.8rem 1.2rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .search-box button:active {
-      transform: scale(0.95);
-      background: #2563eb;
-    }
-
-    .filter-chips {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .chip {
-      background: var(--light);
-      color: var(--secondary);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-    }
-
-    .chip:active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    /* CAMERA FOR FACE RECOGNITION */
-    .camera-container {
-      position: relative;
-      max-width: 500px;
-      margin: 0 auto 1rem;
-      padding: 0 1rem;
-    }
-
-    #video {
-      width: 100%;
-      border-radius: 12px;
-      background: var(--dark);
-      display: none;
-    }
-
-    .camera-controls {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .camera-controls button {
-      flex: 1;
-      min-width: 120px;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      font-size: 0.9rem;
-    }
-
-    .btn-start-camera {
-      background: var(--accent);
-      color: white;
-    }
-
-    .btn-capture {
-      background: var(--primary);
-      color: white;
-      display: none;
-    }
-
-    .btn-stop-camera {
-      background: var(--danger);
-      color: white;
-      display: none;
-    }
-
-    /* RESULTS */
-    .content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1rem;
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .player-card {
-      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-
-    .player-card:active {
-      transform: translateY(-4px);
-      border-color: var(--primary);
-      box-shadow: 0 8px 25px rgba(59,130,246,0.3);
-    }
-
-    .player-photo {
-      width: 100%;
-      aspect-ratio: 1;
-      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: #4b5563;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .player-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .player-info {
-      padding: 0.8rem;
-    }
-
-    .player-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 0.3rem;
-      color: white;
-      word-break: break-word;
-    }
-
-    .player-number {
-      font-size: 2rem;
-      font-weight: 900;
-      color: var(--primary);
-      line-height: 1;
-      margin-bottom: 0.3rem;
-    }
-
-    .player-details {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      line-height: 1.3;
-    }
-
-    .player-team {
-      font-size: 0.75rem;
-      color: var(--accent);
-      font-weight: 600;
-      margin-top: 0.3rem;
-    }
-
-    .player-status {
-      display: inline-block;
-      font-size: 0.65rem;
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      margin-top: 0.3rem;
-      font-weight: 600;
-    }
-
-    .status-disponible {
-      background: rgba(16,185,129,0.2);
-      color: #10b981;
-    }
-
-    .status-lesionado {
-      background: rgba(239,68,68,0.2);
-      color: #ef4444;
-    }
-
-    /* MODAL DETALLES */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 1000;
-      padding: 1rem;
-      overflow-y: auto;
-    }
-
-    .modal.active {
-      display: flex;
-      align-items: flex-end;
-    }
-
-    .modal-content {
-      background: var(--secondary);
-      border-radius: 20px 20px 0 0;
-      width: 100%;
-      max-width: 500px;
-      margin: auto;
-      padding: 0;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .modal-header {
-      background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
-      padding: 1.5rem 1rem 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .modal-close {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-body {
-      padding: 1.5rem;
-    }
-
-    .modal-photo {
-      width: 100%;
-      aspect-ratio: 1;
-      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 5rem;
-      margin-bottom: 1rem;
-      overflow: hidden;
-    }
-
-    .modal-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .player-detail-info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .info-item {
-      background: rgba(255,255,255,0.05);
-      padding: 0.8rem;
-      border-radius: 8px;
-      border-left: 3px solid var(--primary);
-    }
-
-    .info-label {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      text-transform: uppercase;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-
-    .info-value {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: white;
-    }
-
-    .btn-favorite {
-      width: 100%;
-      padding: 1rem;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1rem;
-    }
-
-    .btn-favorite.is-favorite {
-      background: var(--warning);
-      color: white;
-    }
-
-    .btn-favorite:not(.is-favorite) {
-      background: var(--light);
-      color: var(--secondary);
-    }
-
-    /* LOADING & EMPTY STATES */
-    .loading, .empty {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: #9ca3af;
-    }
-
-    .loading::after {
-      content: '';
-      display: inline-block;
-      width: 30px;
-      height: 30px;
-      border: 3px solid var(--light);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-left: 1rem;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* BOTTOM NAVBAR */
-    .navbar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--secondary);
-      border-top: 2px solid #374151;
-      display: flex;
-      justify-content: space-around;
-      padding: 0.8rem 0;
-      max-width: 100vw;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-      cursor: pointer;
-      font-size: 0.75rem;
-      color: #6b7280;
-      transition: color 0.3s ease;
-      flex: 1;
-    }
-
-    .nav-item.active {
-      color: var(--primary);
-    }
-
-    .nav-icon {
-      font-size: 1.5rem;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 640px) {
-      .results-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      }
-
-      .header h1 {
-        font-size: 1.2rem;
-      }
-
-      .search-box {
-        flex-direction: column;
-      }
-
-      .player-details {
-        font-size: 0.75rem;
-      }
-    }
-
-    /* UTILIDADES */
-    .hidden {
-      display: none !important;
-    }
-
-    /* FACE DETECTION CANVAS */
-    canvas {
-      max-width: 100%;
-      border-radius: 12px;
-      margin: 1rem 0;
-      background: var(--dark);
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plantel">
+<meta name="theme-color" content="#12161C">
+<title>Plantel &middot; Liga Profesional</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12161C; --ink-2:#3C444F; --ink-3:#79828E;
+  --sheet:#E8E5DC; --sheet-2:#F4F2EC; --rule:#C8C3B6;
+  --pitch:#1D5A3C;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:Archivo,system-ui,-apple-system,sans-serif;
+  background:var(--sheet); color:var(--ink);
+  font-size:16px; line-height:1.45;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.wrap{max-width:640px;margin:0 auto}
+
+header{
+  background:var(--ink); color:var(--sheet-2);
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 16px;
+}
+header h1{
+  font-family:'Archivo Narrow',Archivo,sans-serif;
+  font-weight:700; font-size:30px; letter-spacing:-.01em; line-height:1;
+}
+header p{color:#9BA4B0; font-size:13px; margin-top:6px}
+
+.controls{
+  position:sticky; top:0; z-index:20;
+  background:var(--sheet); border-bottom:1px solid var(--rule);
+  padding:12px 18px;
+}
+input[type=search]{
+  width:100%; font:inherit; font-size:16px;
+  padding:11px 13px; border:1.5px solid var(--ink);
+  background:var(--sheet-2); color:var(--ink); border-radius:2px;
+}
+input[type=search]:focus{outline:2px solid var(--pitch);outline-offset:1px}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:2px;
+  scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto; font:inherit; font-size:13px; font-weight:500;
+  padding:6px 12px; border:1px solid var(--rule); background:transparent;
+  color:var(--ink-2); border-radius:2px; cursor:pointer; white-space:nowrap;
+}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--sheet-2);border-color:var(--ink)}
+.chip:focus-visible{outline:2px solid var(--pitch);outline-offset:2px}
+
+.count{padding:10px 18px 0;font-size:13px;color:var(--ink-3)}
+
+.club{margin-top:22px}
+.club-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 18px; border-top:2px solid var(--ink); border-bottom:1px solid var(--rule);
+  background:var(--sheet-2); position:sticky; top:104px; z-index:10;
+}
+.crest{width:14px;height:22px;flex:0 0 auto;border:1px solid rgba(0,0,0,.25)}
+.club-bar h2{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:19px}
+.club-bar span{font-size:12px;color:var(--ink-3);margin-left:auto}
+
+.pos-head{
+  padding:14px 18px 4px; font-size:12px; font-weight:600;
+  color:var(--pitch); letter-spacing:.02em;
+}
+ul{list-style:none}
+li.row{
+  display:grid; grid-template-columns:44px 1fr auto; gap:12px; align-items:baseline;
+  padding:9px 18px; border-bottom:1px solid var(--rule);
+  cursor:pointer; background:none; width:100%; text-align:left; font:inherit; color:inherit;
+}
+li.row:focus-visible{outline:2px solid var(--pitch);outline-offset:-2px}
+.num{
+  font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:27px;
+  line-height:1; text-align:right; color:var(--ink);
+}
+.num.none{font-size:15px;color:var(--ink-3);font-weight:600}
+.nm{font-weight:600;font-size:16px;line-height:1.25}
+.sub{font-size:12.5px;color:var(--ink-3);margin-top:1px}
+.meta{font-size:12.5px;color:var(--ink-3);text-align:right;white-space:nowrap}
+.tag{font-weight:600;color:var(--pitch)}
+
+dialog{
+  border:none;padding:0;background:var(--sheet-2);color:var(--ink);
+  width:min(440px,calc(100% - 28px));border-radius:3px;
+  box-shadow:0 18px 50px rgba(18,22,28,.35);
+}
+dialog::backdrop{background:rgba(18,22,28,.55)}
+.d-top{background:var(--ink);color:var(--sheet-2);padding:18px 20px;display:flex;gap:14px}
+.d-num{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:46px;line-height:.9}
+.d-top h3{font-size:20px;font-weight:600;line-height:1.2}
+.d-top p{font-size:13px;color:#9BA4B0;margin-top:3px}
+.d-body{padding:16px 20px 20px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);
+  border:1px solid var(--rule)}
+.fact{background:var(--sheet-2);padding:9px 11px}
+.fact dt{font-size:11.5px;color:var(--ink-3)}
+.fact dd{font-size:17px;font-weight:600;margin-top:1px}
+.d-close{display:block;width:100%;margin-top:14px;padding:11px;font:inherit;
+  font-weight:600;background:var(--ink);color:var(--sheet-2);border:none;
+  border-radius:2px;cursor:pointer}
+
+.empty{padding:40px 18px;color:var(--ink-2);font-size:15px}
+.empty b{display:block;font-size:16px;margin-bottom:5px;color:var(--ink)}
+footer{padding:26px 18px 34px;font-size:12.5px;color:var(--ink-3);
+  border-top:1px solid var(--rule);margin-top:26px}
+footer a{color:var(--pitch)}
+details{margin-top:9px}
+summary{cursor:pointer;font-weight:600;color:var(--ink-2)}
+details ul{margin-top:7px;columns:2;font-size:12px}
+details li{padding:1px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-content">
-      <h1>⚽ Players Pro</h1>
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="search">🔍 Buscar</button>
-        <button class="tab-btn" data-tab="face">👤 Por Rostro</button>
-        <button class="tab-btn" data-tab="favorites">⭐ Favoritos</button>
-        <button class="tab-btn" data-tab="settings">⚙️ Ajustes</button>
-      </div>
-    </div>
+<div class="wrap">
+<header>
+  <h1>Plantel</h1>
+  <p>Liga Profesional Argentina &middot; datos de Promiedos, 2/9/2026</p>
+</header>
+
+<div class="controls">
+  <input type="search" id="q" placeholder="Buscar por nombre, número o puesto" autocomplete="off">
+  <div class="chips" id="chips"></div>
+</div>
+
+<p class="count" id="count"></p>
+<div id="list"></div>
+
+<footer>
+  Planteles tomados de <a href="https://www.promiedos.com.ar/league/liga-profesional/hc/equipos">promiedos.com.ar</a>.
+  Edades y alturas según esa fuente al 2/9/2026. Goles, asistencias y tarjetas
+  corresponden al Clausura y solo figuran para los jugadores que Promiedos lista
+  entre los primeros de cada tabla.
+  <details>
+    <summary id="pend-t"></summary>
+    <ul id="pend"></ul>
+  </details>
+</footer>
+</div>
+
+<dialog id="dlg">
+  <div class="d-top">
+    <div class="d-num" id="d-num"></div>
+    <div><h3 id="d-name"></h3><p id="d-sub"></p></div>
   </div>
-
-  <!-- MAIN CONTENT -->
-  <div class="content">
-    <!-- TAB: SEARCH -->
-    <div id="search-tab" class="tab-content">
-      <div class="search-container">
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Buscar jugador por nombre...">
-          <button id="searchBtn">Buscar</button>
-        </div>
-        <div>
-          <select id="teamFilter" class="search-box-full">
-            <option value="">Todos los equipos</option>
-          </select>
-        </div>
-        <div>
-          <select id="positionFilter" class="search-box-full">
-            <option value="">Todas las posiciones</option>
-            <option value="Portero">Portero</option>
-            <option value="Defensor">Defensor</option>
-            <option value="Mediocampista">Mediocampista</option>
-            <option value="Delantero">Delantero</option>
-          </select>
-        </div>
-        <div class="filter-chips" id="statsFilters">
-          <div class="chip" data-stat="topScorers">🎯 Goleadores</div>
-          <div class="chip" data-stat="topAssists">👟 Asistentes</div>
-          <div class="chip" data-stat="injured">🚑 Lesionados</div>
-        </div>
-      </div>
-      <div id="results-container"></div>
-    </div>
-
-    <!-- TAB: FACE RECOGNITION -->
-    <div id="face-tab" class="tab-content hidden">
-      <div class="camera-container">
-        <div id="loadingFaceAPI" class="loading">Cargando modelo de reconocimiento...</div>
-        <video id="video" playsinline autoplay muted></video>
-        <canvas id="canvas"></canvas>
-        <div class="camera-controls">
-          <button class="btn-start-camera">📷 Activar Cámara</button>
-          <button class="btn-capture">📸 Capturar Rostro</button>
-          <button class="btn-stop-camera">❌ Detener</button>
-        </div>
-      </div>
-      <div id="face-results" style="margin-top: 2rem;"></div>
-    </div>
-
-    <!-- TAB: FAVORITES -->
-    <div id="favorites-tab" class="tab-content hidden">
-      <div id="favorites-container"></div>
-    </div>
-
-    <!-- TAB: SETTINGS -->
-    <div id="settings-tab" class="tab-content hidden">
-      <div class="modal-body">
-        <h2 style="margin-bottom: 1rem;">⚙️ Configuración</h2>
-        <div class="info-item" style="margin-bottom: 1rem;">
-          <div class="info-label">Base de Datos</div>
-          <div class="info-value" id="dbStats">Cargando...</div>
-        </div>
-        <button id="updateDataBtn" style="width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">
-          🔄 Actualizar Datos
-        </button>
-        <button id="clearDataBtn" style="width: 100%; padding: 1rem; background: var(--danger); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-          🗑️ Limpiar Datos
-        </button>
-        <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.85rem;">
-          <p><strong>Versión:</strong> 1.0</p>
-          <p style="margin-top: 0.5rem;">Esta app funciona completamente offline. Los datos se actualizan automáticamente.</p>
-        </div>
-      </div>
-    </div>
+  <div class="d-body">
+    <dl class="facts" id="d-facts"></dl>
+    <button class="d-close" id="d-close">Cerrar</button>
   </div>
+</dialog>
 
-  <!-- MODAL DETALLES JUGADOR -->
-  <div id="playerModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div>
-          <h2 id="modalPlayerName"></h2>
-          <p id="modalPlayerTeam" style="color: rgba(255,255,255,0.7); margin-top: 0.3rem;"></p>
-        </div>
-        <button class="modal-close">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-photo">
-          <img id="modalPlayerPhoto" src="" alt="">
-          <span id="modalPhotoPlaceholder">👤</span>
-        </div>
-        <div class="player-detail-info" id="modalPlayerStats"></div>
-        <button class="btn-favorite" id="favBtn">⭐ Agregar a Favoritos</button>
-      </div>
-    </div>
-  </div>
+<script>
+const DATA = {"equipos": [{"id": "igg", "nombre": "Boca Juniors", "apodo": "Xeneize", "fundado": 1905, "estadio": "Alberto J. Armando", "c1": "#0A2E73", "c2": "#F2C219"}, {"id": "igi", "nombre": "River Plate", "apodo": "Millonario", "fundado": 1901, "estadio": "Más Monumental", "c1": "#E4022B", "c2": "#F2F2F2"}, {"id": "ihg", "nombre": "Racing Club", "apodo": "La Academia", "fundado": 1903, "estadio": "Presidente Perón", "c1": "#6CACE4", "c2": "#F2F2F2"}], "jugadores": [{"id": 1, "n": "Rodolfo Arruabarrena", "num": "DT", "pos": "Entrenador", "g": "Cuerpo técnico", "eq": "Boca Juniors", "eqId": "igg", "edad": 51, "nac": "20/07/1975", "alt": 1.75, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 2, "n": "Agustín Marchesín", "num": "", "pos": "Arquero", "g": "Arqueros", "eq": "Boca Juniors", "eqId": "igg", "edad": 38, "nac": "16/03/1988", "alt": 1.88, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 3, "n": "Álvaro Montero", "num": "1", "pos": "Arquero", "g": "Arqueros", "eq": "Boca Juniors", "eqId": "igg", "edad": 31, "nac": "29/03/1995", "alt": 2.01, "pais": "Colombia", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 4, "n": "Leandro Brey", "num": "12", "pos": "Arquero", "g": "Arqueros", "eq": "Boca Juniors", "eqId": "igg", "edad": 23, "nac": "21/09/2002", "alt": 1.91, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 5, "n": "Javier García", "num": "13", "pos": "Arquero", "g": "Arqueros", "eq": "Boca Juniors", "eqId": "igg", "edad": 39, "nac": "29/01/1987", "alt": 1.8, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 6, "n": "Agustín Heredia", "num": "", "pos": "Defensa Central", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 29, "nac": "16/06/1997", "alt": 1.92, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 7, "n": "Lautaro Di Lollo", "num": "2", "pos": "Defensa Central", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 22, "nac": "10/03/2004", "alt": 1.87, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 3, "tr": 0}, {"id": 8, "n": "Lautaro Blanco", "num": "3", "pos": "Defensa Lateral Izquierdo", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 27, "nac": "19/02/1999", "alt": 1.76, "pais": "Argentina", "goles": 0, "asis": 2, "ta": 0, "tr": 0}, {"id": 9, "n": "Nicolás Figal", "num": "4", "pos": "Defensa Central", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 32, "nac": "03/04/1994", "alt": 1.8, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 10, "n": "Leandro Lozano", "num": "17", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 27, "nac": "19/12/1998", "alt": 1.7, "pais": "Uruguay", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 11, "n": "Dylan Gorosito", "num": "24", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 20, "nac": "03/02/2006", "alt": 1.73, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 12, "n": "Marco Pellegrino", "num": "26", "pos": "Defensa Central", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 24, "nac": "18/07/2002", "alt": 1.84, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 13, "n": "Malcom Braida", "num": "27", "pos": "Defensa Lateral Izquierdo", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 29, "nac": "17/05/1997", "alt": 1.75, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 14, "n": "Ayrton Costa", "num": "32", "pos": "Defensa Central", "g": "Defensores", "eq": "Boca Juniors", "eqId": "igg", "edad": 27, "nac": "12/07/1999", "alt": 1.79, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 5, "tr": 0}, {"id": 15, "n": "Juan Ramirez", "num": "", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 33, "nac": "25/05/1993", "alt": 1.74, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 16, "n": "Leandro Paredes", "num": "5", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 32, "nac": "29/06/1994", "alt": 1.82, "pais": "Argentina", "goles": 2, "asis": 3, "ta": 8, "tr": 0}, {"id": 17, "n": "Rodrigo Battaglia", "num": "6", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 35, "nac": "12/07/1991", "alt": 1.87, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 18, "n": "Carlos Palacios", "num": "7", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 26, "nac": "20/07/2000", "alt": 1.8, "pais": "Chile", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 19, "n": "Tomás Aranda", "num": "10", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 19, "nac": "09/05/2007", "alt": 1.72, "pais": "Argentina", "goles": 0, "asis": 3, "ta": 0, "tr": 0}, {"id": 20, "n": "Williams Alarcón", "num": "15", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 25, "nac": "29/11/2000", "alt": 1.82, "pais": "Chile", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 21, "n": "Milton Delgado", "num": "18", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 21, "nac": "16/06/2005", "alt": 1.66, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 5, "tr": 0}, {"id": 22, "n": "Camilo Rey Domenech", "num": "23", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 20, "nac": "10/03/2006", "alt": 1.78, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 23, "n": "Santiago Ascacibar", "num": "25", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 29, "nac": "25/02/1997", "alt": 1.69, "pais": "Argentina", "goles": 5, "asis": 2, "ta": 4, "tr": 0}, {"id": 24, "n": "Tomás Belmonte", "num": "30", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Boca Juniors", "eqId": "igg", "edad": 28, "nac": "27/05/1998", "alt": 1.81, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 25, "n": "Milton Giménez", "num": "9", "pos": "Centro Delantero", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 30, "nac": "12/08/1996", "alt": 1.84, "pais": "Argentina", "goles": 4, "asis": 0, "ta": 0, "tr": 0}, {"id": 26, "n": "Angel Romero", "num": "11", "pos": "Delantero Derecho", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 34, "nac": "04/07/1992", "alt": 1.76, "pais": "Paraguay", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 27, "n": "Enner Valencia", "num": "13", "pos": "Centro Delantero", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 36, "nac": "04/11/1989", "alt": 1.77, "pais": "Ecuador", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 28, "n": "Miguel Merentiel", "num": "16", "pos": "Centro Delantero", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 30, "nac": "24/02/1996", "alt": 1.76, "pais": "Uruguay", "goles": 7, "asis": 2, "ta": 0, "tr": 0}, {"id": 29, "n": "Leonel Flores", "num": "19", "pos": "Delantero Derecho", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 19, "nac": "06/02/2007", "alt": 1.77, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 30, "n": "Alan Velasco", "num": "20", "pos": "Delantero Izquierdo", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 24, "nac": "27/07/2002", "alt": 1.67, "pais": "Argentina", "goles": 3, "asis": 0, "ta": 0, "tr": 0}, {"id": 31, "n": "Kevin Zenon", "num": "21", "pos": "Delantero Izquierdo", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 25, "nac": "30/07/2001", "alt": 1.81, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 32, "n": "Sebastián Villa", "num": "22", "pos": "Delantero Izquierdo", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 30, "nac": "19/05/1996", "alt": 1.79, "pais": "Colombia", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 33, "n": "Adam Bareiro", "num": "28", "pos": "Centro Delantero", "g": "Delanteros", "eq": "Boca Juniors", "eqId": "igg", "edad": 30, "nac": "26/07/1996", "alt": 1.8, "pais": "Paraguay", "goles": 3, "asis": 0, "ta": 4, "tr": 0}, {"id": 34, "n": "Leonardo Ponzio", "num": "DT", "pos": "Entrenador", "g": "Cuerpo técnico", "eq": "River Plate", "eqId": "igi", "edad": 44, "nac": "29/01/1982", "alt": 1.74, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 35, "n": "Ezequiel Centurión", "num": "33", "pos": "Arquero", "g": "Arqueros", "eq": "River Plate", "eqId": "igi", "edad": 29, "nac": "20/05/1997", "alt": 1.84, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 36, "n": "Santiago Beltrán", "num": "41", "pos": "Arquero", "g": "Arqueros", "eq": "River Plate", "eqId": "igi", "edad": 21, "nac": "04/10/2004", "alt": 1.91, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 37, "n": "Matías Viña", "num": "", "pos": "Defensa Lateral Izquierdo", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 28, "nac": "09/11/1997", "alt": 1.8, "pais": "Uruguay", "goles": 0, "asis": 0, "ta": 5, "tr": 1}, {"id": 38, "n": "Tobías Ramirez", "num": "2", "pos": "Defensa Central", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 19, "nac": "11/11/2006", "alt": 1.85, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 39, "n": "Francisco Ortega", "num": "3", "pos": "Defensa Lateral Izquierdo", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 27, "nac": "19/03/1999", "alt": 1.77, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 40, "n": "Juan Carlos Portillo", "num": "5", "pos": "Defensa Central", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 26, "nac": "18/05/2000", "alt": 1.82, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 41, "n": "Lautaro Rivero", "num": "13", "pos": "Defensa Central", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 22, "nac": "01/11/2003", "alt": 1.85, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 7, "tr": 0}, {"id": 42, "n": "Fabricio Bustos", "num": "16", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 30, "nac": "28/04/1996", "alt": 1.67, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 43, "n": "Giovanni González", "num": "20", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 31, "nac": "20/09/1994", "alt": 1.73, "pais": "Uruguay", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 44, "n": "Marcos Acuña", "num": "21", "pos": "Defensa Lateral Izquierdo", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 34, "nac": "28/10/1991", "alt": 1.72, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 7, "tr": 0}, {"id": 45, "n": "Lucas Martínez Quarta", "num": "28", "pos": "Defensa Central", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 30, "nac": "10/05/1996", "alt": 1.83, "pais": "Argentina", "goles": 2, "asis": 0, "ta": 7, "tr": 0}, {"id": 46, "n": "Gonzalo Montiel", "num": "29", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 29, "nac": "01/01/1997", "alt": 1.75, "pais": "Argentina", "goles": 5, "asis": 0, "ta": 0, "tr": 0}, {"id": 47, "n": "Nicolás Otamendi", "num": "30", "pos": "Defensa Central", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 38, "nac": "12/02/1988", "alt": 1.82, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 48, "n": "Facundo Gonzalez", "num": "31", "pos": "Defensa Central", "g": "Defensores", "eq": "River Plate", "eqId": "igi", "edad": 20, "nac": "03/04/2006", "alt": 1.8, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 49, "n": "Matías Galarza Fonda", "num": "", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 24, "nac": "11/02/2002", "alt": 1.75, "pais": "Paraguay", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 50, "n": "Anibal Moreno", "num": "6", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 27, "nac": "13/05/1999", "alt": 1.77, "pais": "Argentina", "goles": 0, "asis": 3, "ta": 5, "tr": 0}, {"id": 51, "n": "Mauro Arambarri", "num": "8", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 30, "nac": "30/09/1995", "alt": 1.75, "pais": "Uruguay", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 52, "n": "Fausto Vera", "num": "15", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 26, "nac": "26/03/2000", "alt": 1.8, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 4, "tr": 1}, {"id": 53, "n": "Thiago Almada", "num": "23", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 25, "nac": "26/04/2001", "alt": 1.71, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 54, "n": "Juan Cruz Meza", "num": "24", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 18, "nac": "14/03/2008", "alt": 1.83, "pais": "Argentina", "goles": 0, "asis": 2, "ta": 0, "tr": 0}, {"id": 55, "n": "Tomás Galván", "num": "26", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 26, "nac": "11/04/2000", "alt": 1.72, "pais": "Argentina", "goles": 3, "asis": 0, "ta": 0, "tr": 0}, {"id": 56, "n": "Giuliano Galoppo", "num": "34", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 27, "nac": "18/06/1999", "alt": 1.79, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 57, "n": "Lucas Silva", "num": "44", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 19, "nac": "26/02/2007", "alt": 1.79, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 58, "n": "Tobias Andrada", "num": "50", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 19, "nac": "02/02/2007", "alt": 1.79, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 59, "n": "Sebastián Driussi", "num": "9", "pos": "Centro Delantero", "g": "Delanteros", "eq": "River Plate", "eqId": "igi", "edad": 30, "nac": "09/02/1996", "alt": 1.79, "pais": "Argentina", "goles": 5, "asis": 0, "ta": 0, "tr": 0}, {"id": 60, "n": "Angel Correa", "num": "10", "pos": "Segundo Delantero", "g": "Delanteros", "eq": "River Plate", "eqId": "igi", "edad": 31, "nac": "09/03/1995", "alt": 1.71, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 61, "n": "Lucas Beltrán", "num": "18", "pos": "Centro Delantero", "g": "Delanteros", "eq": "River Plate", "eqId": "igi", "edad": 25, "nac": "29/03/2001", "alt": 1.76, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 62, "n": "Rafael Borré", "num": "19", "pos": "Centro Delantero", "g": "Delanteros", "eq": "River Plate", "eqId": "igi", "edad": 30, "nac": "15/09/1995", "alt": 1.74, "pais": "Colombia", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 63, "n": "Lautaro Pereyra", "num": "25", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "River Plate", "eqId": "igi", "edad": 18, "nac": "28/03/2008", "alt": 1.76, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 64, "n": "Agustín Ruberto", "num": "32", "pos": "Centro Delantero", "g": "Delanteros", "eq": "River Plate", "eqId": "igi", "edad": 20, "nac": "14/01/2006", "alt": 1.83, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 65, "n": "Juan Pablo Vojvoda", "num": "DT", "pos": "Entrenador", "g": "Cuerpo técnico", "eq": "Racing Club", "eqId": "ihg", "edad": 51, "nac": "13/05/1975", "alt": 1.85, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 66, "n": "Francisco Gomez", "num": "1", "pos": "Arquero", "g": "Arqueros", "eq": "Racing Club", "eqId": "ihg", "edad": 22, "nac": "06/04/2004", "alt": 1.87, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 67, "n": "Facundo Cambeses", "num": "25", "pos": "Arquero", "g": "Arqueros", "eq": "Racing Club", "eqId": "ihg", "edad": 29, "nac": "09/04/1997", "alt": 1.86, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 68, "n": "Matías Tagliamonte", "num": "30", "pos": "Arquero", "g": "Arqueros", "eq": "Racing Club", "eqId": "ihg", "edad": 28, "nac": "19/02/1998", "alt": 1.93, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 69, "n": "Matías Pérez", "num": "", "pos": "Defensa Central", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 27, "nac": "03/03/1999", "alt": 1.81, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 70, "n": "Juan Barinaga", "num": "", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 25, "nac": "10/10/2000", "alt": 1.76, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 71, "n": "Marco Di Cesare", "num": "3", "pos": "Defensa Central", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 24, "nac": "30/01/2002", "alt": 1.86, "pais": "Argentina", "goles": 2, "asis": 0, "ta": 6, "tr": 2}, {"id": 72, "n": "Ezequiel Cannavo", "num": "4", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 24, "nac": "12/06/2002", "alt": 1.8, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 4, "tr": 0}, {"id": 73, "n": "Marcos Rojo", "num": "6", "pos": "Defensa Central", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 36, "nac": "20/03/1990", "alt": 1.86, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 4, "tr": 1}, {"id": 74, "n": "Alfonso Espino", "num": "18", "pos": "Defensa Lateral Izquierdo", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 34, "nac": "05/01/1992", "alt": 1.72, "pais": "Uruguay", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 75, "n": "Nazareno Colombo", "num": "23", "pos": "Defensa Central", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 27, "nac": "20/03/1999", "alt": 1.82, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 76, "n": "Tobías Rubio", "num": "34", "pos": "Defensa Lateral Derecho", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 22, "nac": "27/07/2004", "alt": 1.77, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 77, "n": "Gonzalo Escudero", "num": "43", "pos": "Defensa Central", "g": "Defensores", "eq": "Racing Club", "eqId": "ihg", "edad": 19, "nac": "01/04/2007", "alt": 1.87, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 78, "n": "Matias Kranevitter", "num": "5", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 33, "nac": "21/05/1993", "alt": 1.79, "pais": "Argentina", "goles": 0, "asis": 1, "ta": 0, "tr": 0}, {"id": 79, "n": "Alan Forneris", "num": "8", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 21, "nac": "28/01/2005", "alt": 1.84, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 80, "n": "Matko Miljevic", "num": "10", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 25, "nac": "09/05/2001", "alt": 1.76, "pais": "EEUU", "goles": 2, "asis": 0, "ta": 0, "tr": 1}, {"id": 81, "n": "Matias Zaracho", "num": "11", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 28, "nac": "10/03/1998", "alt": 1.71, "pais": "Argentina", "goles": 3, "asis": 0, "ta": 0, "tr": 0}, {"id": 82, "n": "Ulises Ortegoza", "num": "16", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 29, "nac": "19/04/1997", "alt": 1.8, "pais": "Chile", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 83, "n": "Ignacio Rodríguez", "num": "19", "pos": "Volante Izquierdo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 24, "nac": "22/02/2002", "alt": 1.76, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 6, "tr": 0}, {"id": 84, "n": "Gastón Lodico", "num": "20", "pos": "Mediocampista Central", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 28, "nac": "28/05/1998", "alt": 1.73, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 85, "n": "Valentín Carboni", "num": "21", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 21, "nac": "05/03/2005", "alt": 1.85, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 86, "n": "Adrian Fernandez", "num": "24", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 25, "nac": "20/05/2001", "alt": 1.83, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 4, "tr": 1}, {"id": 87, "n": "Leonel Perez", "num": "33", "pos": "Centrocampista defensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 22, "nac": "09/08/2004", "alt": 1.86, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 88, "n": "Alejandro Tello", "num": "46", "pos": "Mediocampista Ofensivo", "g": "Mediocampistas", "eq": "Racing Club", "eqId": "ihg", "edad": 18, "nac": "08/02/2008", "alt": 1.84, "pais": "Argentina", "goles": 0, "asis": 1, "ta": 0, "tr": 0}, {"id": 89, "n": "Duván Vergara", "num": "7", "pos": "Delantero Izquierdo", "g": "Delanteros", "eq": "Racing Club", "eqId": "ihg", "edad": 29, "nac": "09/09/1996", "alt": 1.77, "pais": "Colombia", "goles": 3, "asis": 0, "ta": 0, "tr": 0}, {"id": 90, "n": "Adrian Martinez", "num": "9", "pos": "Centro Delantero", "g": "Delanteros", "eq": "Racing Club", "eqId": "ihg", "edad": 34, "nac": "07/07/1992", "alt": 1.76, "pais": "Argentina", "goles": 4, "asis": 0, "ta": 0, "tr": 2}, {"id": 91, "n": "Tomas Conechny", "num": "17", "pos": "Delantero Izquierdo", "g": "Delanteros", "eq": "Racing Club", "eqId": "ihg", "edad": 28, "nac": "30/03/1998", "alt": 1.76, "pais": "Argentina", "goles": 3, "asis": 2, "ta": 0, "tr": 0}, {"id": 92, "n": "Elias Torres", "num": "22", "pos": "Centro Delantero", "g": "Delanteros", "eq": "Racing Club", "eqId": "ihg", "edad": 25, "nac": "02/03/2001", "alt": 1.86, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}, {"id": 93, "n": "Santiago Solari", "num": "28", "pos": "Delantero Derecho", "g": "Delanteros", "eq": "Racing Club", "eqId": "ihg", "edad": 28, "nac": "19/01/1998", "alt": 1.78, "pais": "Argentina", "goles": 0, "asis": 4, "ta": 0, "tr": 0}, {"id": 94, "n": "Lautaro Díaz", "num": "32", "pos": "Centro Delantero", "g": "Delanteros", "eq": "Racing Club", "eqId": "ihg", "edad": 28, "nac": "21/05/1998", "alt": 1.81, "pais": "Argentina", "goles": 0, "asis": 0, "ta": 0, "tr": 0}], "pendientes": [{"nombre": "Aldosivi", "url": "https://www.promiedos.com.ar/team/aldosivi/hccd"}, {"nombre": "Argentinos Juniors", "url": "https://www.promiedos.com.ar/team/argentinos-juniors/ihb"}, {"nombre": "Atlético Tucumán", "url": "https://www.promiedos.com.ar/team/atletico-tucuman/gbfc"}, {"nombre": "Banfield", "url": "https://www.promiedos.com.ar/team/banfield/ihi"}, {"nombre": "Barracas Central", "url": "https://www.promiedos.com.ar/team/barracas-central/jafb"}, {"nombre": "Belgrano", "url": "https://www.promiedos.com.ar/team/belgrano/fhid"}, {"nombre": "Central Córdoba SdE", "url": "https://www.promiedos.com.ar/team/central-cordoba-sde/beafh"}, {"nombre": "Defensa y Justicia", "url": "https://www.promiedos.com.ar/team/defensa-y-justicia/hcbh"}, {"nombre": "Deportivo Riestra", "url": "https://www.promiedos.com.ar/team/riestra/bbjea"}, {"nombre": "Estudiantes de La Plata", "url": "https://www.promiedos.com.ar/team/estudiantes-de-la-plata/igh"}, {"nombre": "Estudiantes RC", "url": "https://www.promiedos.com.ar/team/estudiantes-rio-cuarto/bheaf"}, {"nombre": "Gimnasia de Mendoza", "url": "https://www.promiedos.com.ar/team/gimnasia-mendoza/bbjbf"}, {"nombre": "Gimnasia La Plata", "url": "https://www.promiedos.com.ar/team/gimnasia-la-plata/iia"}, {"nombre": "Huracán", "url": "https://www.promiedos.com.ar/team/huracan/iie"}, {"nombre": "Independiente", "url": "https://www.promiedos.com.ar/team/independiente/ihe"}, {"nombre": "Independiente Rivadavia", "url": "https://www.promiedos.com.ar/team/independiente-rivadavia/hcch"}, {"nombre": "Instituto", "url": "https://www.promiedos.com.ar/team/instituto-ac-cordoba/hchc"}, {"nombre": "Lanús", "url": "https://www.promiedos.com.ar/team/lanus/igj"}, {"nombre": "Newell's Old Boys", "url": "https://www.promiedos.com.ar/team/newell's-old-boys/ihh"}, {"nombre": "Platense", "url": "https://www.promiedos.com.ar/team/platense/hcah"}, {"nombre": "Rosario Central", "url": "https://www.promiedos.com.ar/team/rosario-central/ihf"}, {"nombre": "San Lorenzo", "url": "https://www.promiedos.com.ar/team/san-lorenzo/igf"}, {"nombre": "Sarmiento Junín", "url": "https://www.promiedos.com.ar/team/sarmiento-junin/hbbh"}, {"nombre": "Talleres de Córdoba", "url": "https://www.promiedos.com.ar/team/talleres-cordoba/jche"}, {"nombre": "Tigre", "url": "https://www.promiedos.com.ar/team/tigre/iid"}, {"nombre": "Unión de Santa Fe", "url": "https://www.promiedos.com.ar/team/union-santa-fe/hcag"}, {"nombre": "Vélez Sarsfield", "url": "https://www.promiedos.com.ar/team/velez-sarsfield/ihc"}], "fuente": "promiedos.com.ar", "fecha": "2026-09-02"};
+const ORDEN = ['Arqueros','Defensores','Mediocampistas','Delanteros','Cuerpo técnico'];
+const clubes = Object.fromEntries(DATA.equipos.map(e => [e.id, e]));
+let filtroEq = null;
 
-  <!-- NAVBAR -->
-  <div class="navbar">
-    <div class="nav-item active" data-tab="search"><span class="nav-icon">🔍</span><span>Buscar</span></div>
-    <div class="nav-item" data-tab="face"><span class="nav-icon">👤</span><span>Rostro</span></div>
-    <div class="nav-item" data-tab="favorites"><span class="nav-icon">⭐</span><span>Favoritos</span></div>
-    <div class="nav-item" data-tab="settings"><span class="nav-icon">⚙️</span><span>Ajustes</span></div>
-  </div>
+const q = document.getElementById('q');
+const list = document.getElementById('list');
+const count = document.getElementById('count');
+const dlg = document.getElementById('dlg');
 
-  <!-- SCRIPTS -->
-  <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-  <script src="app.js"></script>
+const chips = document.getElementById('chips');
+chips.innerHTML = '<button class="chip" data-eq="" aria-pressed="true">Todos</button>' +
+  DATA.equipos.map(e => `<button class="chip" data-eq="${e.id}" aria-pressed="false">${e.nombre}</button>`).join('');
+chips.addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  filtroEq = b.dataset.eq || null;
+  [...chips.children].forEach(c => c.setAttribute('aria-pressed', c === b));
+  render();
+});
+
+const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+function filtrar() {
+  const t = norm(q.value.trim());
+  return DATA.jugadores.filter(j => {
+    if (filtroEq && j.eqId !== filtroEq) return false;
+    if (!t) return true;
+    return norm(j.n).includes(t) || norm(j.pos).includes(t) ||
+           norm(j.pais).includes(t) || j.num === t || norm(j.g).includes(t);
+  });
+}
+
+function render() {
+  const res = filtrar();
+  count.textContent = res.length ? `${res.length} ${res.length === 1 ? 'persona' : 'personas'}` : '';
+
+  if (!res.length) {
+    list.innerHTML = `<div class="empty"><b>Sin resultados</b>
+      Probá con el apellido, el número de camiseta o un puesto como “arquero”.</div>`;
+    return;
+  }
+
+  let html = '';
+  for (const eq of DATA.equipos) {
+    const delEq = res.filter(j => j.eqId === eq.id);
+    if (!delEq.length) continue;
+    html += `<section class="club"><div class="club-bar">
+      <span class="crest" style="background:linear-gradient(90deg,${eq.c1} 50%,${eq.c2} 50%)"></span>
+      <h2>${eq.nombre}</h2><span>${eq.estadio} &middot; ${eq.fundado}</span></div>`;
+    for (const g of ORDEN) {
+      const grupo = delEq.filter(j => j.g === g);
+      if (!grupo.length) continue;
+      html += `<p class="pos-head">${g}</p><ul>`;
+      for (const j of grupo) {
+        const extra = [];
+        if (j.goles) extra.push(`${j.goles} ${j.goles === 1 ? 'gol' : 'goles'}`);
+        if (j.asis) extra.push(`${j.asis} asist.`);
+        html += `<li class="row" tabindex="0" role="button" data-id="${j.id}">
+          <span class="num${j.num ? '' : ' none'}">${j.num || 's/n'}</span>
+          <span><span class="nm">${j.n}</span><span class="sub">${j.pos}${
+            extra.length ? ' &middot; <span class="tag">' + extra.join(' &middot; ') + '</span>' : ''
+          }</span></span>
+          <span class="meta">${j.edad} a&ntilde;os<br>${j.alt.toFixed(2)} m</span></li>`;
+      }
+      html += '</ul>';
+    }
+    html += '</section>';
+  }
+  list.innerHTML = html;
+}
+
+function abrir(id) {
+  const j = DATA.jugadores.find(x => x.id === id); if (!j) return;
+  document.getElementById('d-num').textContent = j.num || 's/n';
+  document.getElementById('d-name').textContent = j.n;
+  document.getElementById('d-sub').textContent = `${j.eq} · ${j.pos}`;
+  const f = [['Edad', j.edad + ' años'], ['Nacimiento', j.nac], ['Altura', j.alt.toFixed(2) + ' m'],
+             ['País', j.pais], ['Goles', j.goles], ['Asistencias', j.asis],
+             ['Amarillas', j.ta], ['Rojas', j.tr]];
+  document.getElementById('d-facts').innerHTML =
+    f.map(([k, v]) => `<div class="fact"><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  dlg.showModal();
+}
+
+list.addEventListener('click', e => {
+  const r = e.target.closest('.row'); if (r) abrir(+r.dataset.id);
+});
+list.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const r = e.target.closest('.row'); if (r) { e.preventDefault(); abrir(+r.dataset.id); }
+});
+document.getElementById('d-close').onclick = () => dlg.close();
+q.addEventListener('input', render);
+
+document.getElementById('pend-t').textContent =
+  `Faltan ${DATA.pendientes.length} equipos — ver cuáles`;
+document.getElementById('pend').innerHTML =
+  DATA.pendientes.map(p => `<li><a href="${p.url}">${p.nombre}</a></li>`).join('');
+
+render();
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
 </body>
 </html>
