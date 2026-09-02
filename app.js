@@ -138,16 +138,35 @@ class PlayersApp {
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
     });
-  }
+async loadData() {
+  try {
+    // Intentar cargar desde IndexedDB primero
+    const data = await this.getFromDB('metadata', 'playersData');
+    
+    if (data) {
+      console.log('📂 Datos cargados desde base de datos local');
+      this.players = data.players || [];
+      this.teams = data.teams || [];
+    } else {
+      // Cargar del JSON en GitHub
+      console.log('📥 Descargando datos de GitHub...');
+      const response = await fetch('./players-database.json');
+      const fileData = await response.json();
+      this.players = fileData.players || [];
+      this.teams = fileData.teams || [];
+      
+      // Guardar en IndexedDB
+      await this.saveToDB('metadata', { key: 'playersData', ...fileData });
+    }
 
-  async getFromDB(storeName, key) {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([storeName], 'readonly');
-      const store = transaction.objectStore(storeName);
-      const request = store.get(key);
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
-    });
+    this.populateTeamFilter();
+    this.renderResults();
+    
+  } catch (error) {
+    console.error('Error cargando datos:', error);
+    this.loadSampleData(); // Fallback a datos de demostración
+  }
+}
   }
 
   // ==================== BÚSQUEDA ====================
